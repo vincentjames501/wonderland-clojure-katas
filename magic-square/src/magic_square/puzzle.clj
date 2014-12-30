@@ -7,8 +7,7 @@
 
    1. The sums of numbers in each row = magic number
    2. The sums of numbers in each column = magic number
-   3. The sums of numbers in each diagonal = magic number"
-  (:require [clojure.math.combinatorics :refer [combinations permutations]]))
+   3. The sums of numbers in each diagonal = magic number")
 
 (def values
   "The values for the magic square puzzle."
@@ -46,10 +45,21 @@
      (set (sum-cols square))
      (set (sum-diagonals square))))
 
+(defn- permutations
+  "Creates all possible permutations given a collection of values."
+  [coll]
+  (if-not (seq coll)
+    [[]]
+    (mapcat (fn [x]
+              (map (fn [y]
+                     (cons x y))
+                   (permutations (remove #(= x %) coll))))
+            coll)))
+
 (defn magic-square
   "Solves the magic square given a set of values."
-  [values]
-  (->> (permutations values)                                ; Get all permutations
+  [coll]
+  (->> (permutations coll)                                  ; Get all permutations
        (map #(map vec (partition 3 %)))                     ; Partition each permutation into a 3x3 square
        (filter #(valid-square? %))                          ; Filter only the valid square
        first                                                ; Find the first valid square
